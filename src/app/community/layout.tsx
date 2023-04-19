@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styled from "styled-components";
-import FlowIcon from "../../../public/flow.svg";
+import BlocksIcon from "../../../public/blocks.svg";
 import PuzzlePieceIcon from "../../../public/puzzle_piece.svg";
 import TemplateIcon from "../../../public/template.svg";
 
@@ -21,6 +21,8 @@ const LayoutWrapper = styled.div`
 const ContentPanel = styled.div`
   flex: 1;
   padding: ${PAGE_PADDING};
+  display: flex;
+  flex-flow: column;
 `;
 
 const NavPanel = styled.div`
@@ -78,21 +80,19 @@ const NAV_LINKS: CommunityNavLink[] = [
     id: "blocks",
     label: "Blocks",
     href: `${COMMUNITY_BASE_PATH}/blocks`,
-    icon: <FlowIcon />,
+    icon: <BlocksIcon />,
   },
   {
     id: "plugins",
     label: "Plugins",
     href: `${COMMUNITY_BASE_PATH}/plugins`,
     icon: <PuzzlePieceIcon />,
-    disabled: true,
   },
   {
     id: "templates",
     label: "Templates",
-    href: `${COMMUNITY_BASE_PATH}/templates`,
+    href: `${COMMUNITY_BASE_PATH}/plugins`,
     icon: <TemplateIcon />,
-    disabled: true,
   },
 ];
 
