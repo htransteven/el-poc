@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import BlocksIcon from "../../../public/blocks.svg";
 import PuzzlePieceIcon from "../../../public/puzzle_piece.svg";
@@ -49,6 +50,10 @@ const NavPanelTitle = styled.span`
   margin: 20px 0 10px 0;
 `;
 
+const NavPanelLinkWrapper = styled.div`
+  z-index: 1;
+`;
+
 const NavPanelLink = styled(Link)<{ $activeLink: boolean; $disabled: boolean }>`
   display: flex;
   flex-flow: row nowrap;
@@ -56,16 +61,14 @@ const NavPanelLink = styled(Link)<{ $activeLink: boolean; $disabled: boolean }>`
   justify-content: flex-start;
   gap: 10px;
   padding: 8px 16px;
-  border-radius: 4px;
-  background-color: ${({ $activeLink }) =>
-    $activeLink ? "#f0f0f0" : "transparent"};
-  transition: 0.2s background-color;
 
-  opacity: ${({ $disabled }) => ($disabled ? 0.6 : 1)};
   pointer-events: ${({ $disabled }) => ($disabled ? "none" : "inherit")};
+  opacity: ${({ $activeLink, $disabled }) =>
+    $disabled ? 0.4 : $activeLink ? 1 : 0.6};
+  transition: 0.2s opacity;
 
   :hover {
-    background-color: #f0f0f0;
+    opacity: 1;
   }
 `;
 
@@ -74,6 +77,13 @@ const NavPanelLinkIcon = styled.div`
   width: 20px;
 `;
 const NavPanelLinkLabel = styled.span``;
+
+const NavPanelActiveLinkIndicator = styled.div`
+  position: absolute;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  transition: 0.2s all;
+`;
 
 interface CommunityNavLink {
   id: string;
@@ -104,8 +114,47 @@ const NAV_LINKS: CommunityNavLink[] = [
   },
 ];
 
+interface IndicatorPosition {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+const getIndicatorPositionStyle = (elem: HTMLElement): IndicatorPosition => {
+  const { left, top, width, height } = elem.getBoundingClientRect();
+
+  return {
+    left,
+    top,
+    width,
+    height,
+  };
+};
+
 const CommunityPageLayout = ({ children }: { children: React.ReactNode }) => {
   const pathName = usePathname();
+  const activeLinkRef = useRef<HTMLDivElement | null>(null);
+  const [indicatorPosition, setIndicatorPosition] = useState<
+    IndicatorPosition | undefined
+  >(undefined);
+
+  useLayoutEffect(() => {
+    if (!activeLinkRef.current) {
+      setIndicatorPosition(undefined);
+      return;
+    }
+
+    setIndicatorPosition(getIndicatorPositionStyle(activeLinkRef.current));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathName]);
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    console.log(e);
+  };
+
+  console.log(activeLinkRef, indicatorPosition);
 
   return (
     <LayoutWrapper>
@@ -117,16 +166,24 @@ const CommunityPageLayout = ({ children }: { children: React.ReactNode }) => {
           height={24}
         />
         <NavPanelTitle>Community</NavPanelTitle>
+        {indicatorPosition && (
+          <NavPanelActiveLinkIndicator style={indicatorPosition} />
+        )}
         {NAV_LINKS.map((link) => (
-          <NavPanelLink
-            href={link.href}
+          <NavPanelLinkWrapper
             key={`community-nav-link-${link.id}`}
-            $activeLink={pathName === link.href}
-            $disabled={!!link.disabled}
+            ref={pathName === link.href ? activeLinkRef : undefined}
           >
-            {link.icon && <NavPanelLinkIcon>{link.icon}</NavPanelLinkIcon>}
-            <NavPanelLinkLabel>{link.label}</NavPanelLinkLabel>
-          </NavPanelLink>
+            <NavPanelLink
+              href={link.href}
+              $activeLink={pathName === link.href}
+              $disabled={!!link.disabled}
+              onClick={handleLinkClick}
+            >
+              {link.icon && <NavPanelLinkIcon>{link.icon}</NavPanelLinkIcon>}
+              <NavPanelLinkLabel>{link.label}</NavPanelLinkLabel>
+            </NavPanelLink>
+          </NavPanelLinkWrapper>
         ))}
       </NavPanel>
       <ContentPanel>{children}</ContentPanel>
