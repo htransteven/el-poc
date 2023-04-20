@@ -16,6 +16,10 @@ const LayoutWrapper = styled.div`
   flex: 1;
   display: flex;
   flex-flow: row nowrap;
+
+  @media only screen and (max-width: 500px) {
+    flex-flow: column;
+  }
 `;
 
 const ContentPanel = styled.div`
@@ -33,6 +37,10 @@ const NavPanel = styled.div`
   display: flex;
   flex-flow: column;
   gap: 10px;
+
+  @media only screen and (max-width: 500px) {
+    max-width: none;
+  }
 `;
 
 const NavPanelTitle = styled.span`
@@ -91,7 +99,7 @@ const NAV_LINKS: CommunityNavLink[] = [
   {
     id: "templates",
     label: "Templates",
-    href: `${COMMUNITY_BASE_PATH}/plugins`,
+    href: `${COMMUNITY_BASE_PATH}/templates`,
     icon: <TemplateIcon />,
   },
 ];

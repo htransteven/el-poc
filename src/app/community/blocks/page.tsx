@@ -140,6 +140,11 @@ const TileWrapper = styled.div`
   :hover {
     box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.2);
   }
+
+  @media only screen and (max-width: 500px) {
+    min-width: 100%;
+    max-width: 100%;
+  }
 `;
 
 const TileImageWrapper = styled.div`
@@ -244,7 +249,6 @@ const CommunityBlocksPage = () => {
 
   const filteredData = useMemo(() => {
     return initialData.blocks.reduce((blocks, currBlock) => {
-      console.log(searchValue, currBlock.name, currBlock.author);
       if (
         currBlock.name.toLowerCase().includes(searchValue) ||
         currBlock.author.toLowerCase().includes(searchValue)
