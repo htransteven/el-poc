@@ -2,8 +2,10 @@
 
 import { differenceInDays, format } from "date-fns";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styled from "styled-components";
+
+import SearchIcon from "../../../../public/search.svg";
 
 interface CommunityBlock {
   /** UUID */
@@ -84,6 +86,36 @@ const FAKE_DATA: {
 };
 
 const PageTitle = styled.h1``;
+
+const SearchWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  > svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  height: 30px;
+  padding: 20px 40px;
+  border-radius: 6px;
+  outline: none;
+  border: 1px solid #ededed;
+  transition: 0.2s border;
+
+  :focus {
+    border: 1px solid #000000;
+  }
+`;
 
 const ResultsContainer = styled.div`
   display: flex;
@@ -168,8 +200,6 @@ const CommunityBlockTile = ({
   const showNewTag = differenceInDays(new Date(), dateCreated) <= 30;
   const showRecentlyUpdatedTag = differenceInDays(new Date(), dateUpdated) <= 7;
 
-  console.log(deprecated);
-
   return (
     <TileWrapper>
       <TileImageWrapper>{image}</TileImageWrapper>
@@ -206,12 +236,38 @@ const CommunityBlockTile = ({
 
 const CommunityBlocksPage = () => {
   const [initialData] = useState(FAKE_DATA);
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value);
+  };
+
+  const filteredData = useMemo(() => {
+    return initialData.blocks.reduce((blocks, currBlock) => {
+      console.log(searchValue, currBlock.name, currBlock.author);
+      if (
+        currBlock.name.toLowerCase().includes(searchValue) ||
+        currBlock.author.toLowerCase().includes(searchValue)
+      ) {
+        blocks.push(currBlock);
+      }
+      return blocks;
+    }, [] as CommunityBlock[]);
+  }, [initialData.blocks, searchValue]);
 
   return (
     <>
       <PageTitle>Community Blocks</PageTitle>
+      <SearchWrapper>
+        <SearchIcon />
+        <SearchInput
+          placeholder="Search community blocks"
+          value={searchValue}
+          onChange={handleInputChange}
+        />
+      </SearchWrapper>
       <ResultsContainer>
-        {initialData.blocks.map((block) => (
+        {filteredData.map((block) => (
           <CommunityBlockTile
             key={`community-blocks-tile-${block.id}`}
             {...block}
