@@ -48,6 +48,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.className}>
+      <head>
+        <title>Community - Emergent Layer</title>
+        <meta name="author" content="Steven Huynh-Tran" />
+      </head>
       <body>
         <GlobalStyle />
         <StyledComponentsRegistry>

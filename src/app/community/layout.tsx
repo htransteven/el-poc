@@ -150,12 +150,6 @@ const CommunityPageLayout = ({ children }: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathName]);
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    console.log(e);
-  };
-
-  console.log(activeLinkRef, indicatorPosition);
-
   return (
     <LayoutWrapper>
       <NavPanel>
@@ -178,7 +172,6 @@ const CommunityPageLayout = ({ children }: { children: React.ReactNode }) => {
               href={link.href}
               $activeLink={pathName === link.href}
               $disabled={!!link.disabled}
-              onClick={handleLinkClick}
             >
               {link.icon && <NavPanelLinkIcon>{link.icon}</NavPanelLinkIcon>}
               <NavPanelLinkLabel>{link.label}</NavPanelLinkLabel>
